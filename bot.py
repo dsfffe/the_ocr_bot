@@ -30,10 +30,10 @@ logger = logging.getLogger(__name__)
 @run_async     
 @send_typing_action
 def start(update,context):
-    """Send a message when the command /start is issued."""
+    """send /start"""
     global first
     first=update.message.chat.first_name
-    update.message.reply_text('Hi! '+str(first)+' \n\nWelcome to Optical Character Recognizer Bot. \n\nJust send a clear image to me and i will recognize the text in the image and send it as a message!')
+    update.message.reply_text('سلام این ربات میتونه تکست رو از عکس استخراج کنه متاسفانه زبان فارسی ساپورت نمیشه 📥')
 
 @run_async
 @send_typing_action
@@ -42,27 +42,27 @@ def convert_image(update,context):
         newFile=context.bot.get_file(file_id)
         file= newFile.file_path
         context.user_data['filepath']=file
-        keyboard = [[InlineKeyboardButton("English ", callback_data='eng'), InlineKeyboardButton("Russian", callback_data='rus'),InlineKeyboardButton("Czech", callback_data='cze')],
-                    [InlineKeyboardButton("Chinese simplified", callback_data='chs'), InlineKeyboardButton("Chinese Traditional", callback_data='cht')],[InlineKeyboardButton("Japanese", callback_data='jpn')] ,
-                    [InlineKeyboardButton("Arabic", callback_data='ara'),InlineKeyboardButton("Afrikans", callback_data='AFR'), InlineKeyboardButton("German", callback_data='gre')],
-                    [InlineKeyboardButton("Italian", callback_data='ita'),InlineKeyboardButton("Indonesian", callback_data='eng'),InlineKeyboardButton("French", callback_data='fre')],
-                    [InlineKeyboardButton ("Spanish", callback_data='spa'),InlineKeyboardButton("Portuguese", callback_data='por'),InlineKeyboardButton("Korean", callback_data='kor')]]
+        keyboard = [[InlineKeyboardButton("🏴󠁧󠁢󠁥󠁮󠁧󠁿 انگلیسی", callback_data='eng'), InlineKeyboardButton("🇷🇺 روسی", callback_data='rus'),InlineKeyboardButton("🇨🇿 چکی", callback_data='cze')],
+                    [InlineKeyboardButton("🇨🇳 چینی ساده شده", callback_data='chs'), InlineKeyboardButton("🇨🇳 چینی سنتی", callback_data='cht')],[InlineKeyboardButton("🇯🇵 ژاپنی", callback_data='jpn')] ,
+                    [InlineKeyboardButton("🇸🇦 عربی", callback_data='ara'),InlineKeyboardButton("🇿🇦 آفریقایی", callback_data='AFR'), InlineKeyboardButton("🇩🇪 آلمانی", callback_data='gre')],
+                    [InlineKeyboardButton("🇮🇹 ایتالیایی", callback_data='ita'),InlineKeyboardButton("🇮🇩 اندونزی", callback_data='eng'),InlineKeyboardButton("🇫🇷 فرانسوی", callback_data='fre')],
+                    [InlineKeyboardButton ("🇪🇸 اسپانیایی", callback_data='spa'),InlineKeyboardButton("🇵🇹 پرتغالی", callback_data='por'),InlineKeyboardButton("🇰🇷 کره ای", callback_data='kor')]]
         reply_markup = InlineKeyboardMarkup(keyboard)
-        update.message.reply_text('Select Language : ', reply_markup=reply_markup)
+        update.message.reply_text('لطفا زبان خود را انتخاب کنید : ', reply_markup=reply_markup)
 
 @run_async
 def button(update,context):
     filepath=context.user_data['filepath']
     query = update.callback_query
     query.answer()
-    query.edit_message_text("Extracting text please wait ...")
+    query.edit_message_text("wait ...")
     data=requests.get(f"https://api.ocr.space/parse/imageurl?apikey={api_key}&url={filepath}&language={query.data}&detectOrientation=True&filetype=JPG&OCREngine=1&isTable=True&scale=True")
     data=data.json()
     if data['IsErroredOnProcessing']==False:
         message=data['ParsedResults'][0]['ParsedText']
         query.edit_message_text(f"{message}")
     else:
-        query.edit_message_text(text="⚠️Something went wrong, please try again ⚠️")
+        query.edit_message_text(text="error")
 
 persistence=PicklePersistence('userdata')
 def main(): 
